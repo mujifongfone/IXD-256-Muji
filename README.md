@@ -1,4 +1,9 @@
-# IXD-256-Muji![1](https://github.com/mujifongfone/IXD-256-Muji/assets/146476309/f775fbcf-2cc6-4ced-bc72-7e35224672fd)
+
+![intro](https://github.com/mujifongfone/IXD-256-Muji/assets/146476309/0c9eb6fb-66f5-4781-a6bd-be4458b978ba)
+
+![IMG_8762](https://github.com/mujifongfone/IXD-256-Muji/assets/146476309/1a272bdc-402d-400a-9249-bcbe40a847de)
+![IMG_8765](https://github.com/mujifongfone/IXD-256-Muji/assets/146476309/6db67c2b-87b8-4ebf-90d1-ff9d751be3df)
+![IMG_8764](https://github.com/mujifongfone/IXD-256-Muji/assets/146476309/4511a239-3c90-4d40-ab2b-84b157d2ea17)
 
 import os, sys, io
 import M5
