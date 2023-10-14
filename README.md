@@ -14,40 +14,30 @@ import time
 
 
 pin1 = None
-rgb = None
+looprun = None
 
 
 def setup():
-  global pin1, rgb
+  global pin1, looprun
 
   M5.begin()
   pin1 = Pin(1, mode=Pin.OUT)
-  # default rbg setting
-  rbg=RGB()
-  #custom setting using pin G35
-  rgb = RGB(io=2, n=10, type="SK6812")
+  looprun = 0
+
 
 
 def loop():
-  global pin1, rgb, rgb_color
-  M5.update()
-  # fade in RGB green
-  for i in range(100):
-      rgb.fill_color(get_color(0,i,0))
-      time.sleep_ms(20)
-  # cgase RGB blue light
-  for i in range(10):
-    rgb.set_color(i, 0x0000ff)
-    time.sleep_ms(100)
-  rgb.fill_color(0xff0129)
-  time.sleep_ms(1000)
+  global pin1,looprun
   
-def get_color(r,g,b):
-  rgb_color = (r << 16) | (g << 8) | b
-  return rgb_color
+  M5.update()
+  if looprun <= 5 :
+    pin1.on()
+    time.sleep(1)
+    pin1.off()
+    time.sleep(1)
+    looprun +=1
+    print(looprun)
 
-print(get_color(255,0,0))
-print('color ='), hex(get_color(255,0,0))
 
 if __name__ == '__main__':
   try:
