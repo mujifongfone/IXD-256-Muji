@@ -8,11 +8,11 @@ This project is based on the second assignment which I made a digital ice cream 
 **How the system works:**
 1. Scan the finger to start (represents reading fortune) (touch ldr to change the threshold)
 2. Choosing flavors (4 flavors)
-    1. press ButtonA to go to previous option
+    1. press ButtonA to go to the previous option
     2. press ButtonB to select
     3. press ButtonC to go to the next option
 3. Choosing toppings (4 toppings)
-    1. press ButtonA to go to previous option
+    1. press ButtonA to go to the previous option
     2. press ButtonB to select
     3. press ButtonC to go to the next option
 4. Fortune calculating (display this image for 3 seconds)
