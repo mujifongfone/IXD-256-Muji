@@ -1,1 +1,211 @@
-fff
+# Assignment 4: Fortune Ice Cream Machine
+## Introduction
+
+This project is a prototype of an actual size fortune ice cream machine that would be positioned in different parts of the city for an ice cream brand. The fortune telling part is a marketing tool to promote the brand. As the customer buy the ice cream, they will also get a fortune. If it’s good then they get 1 ice cream, if it’s bad then they will get 2 ice cream, so they can share it with someone else- they are not alone or share the bad fortune or they can decide to have two for themselves.
+This project is based on the second assignment which I made a digital ice cream machine that is displayed on the screen. I further developed the concept and give it a physical prototype.
+
+## Implementation
+**How the system works:**
+1. Scan the finger to start (represents reading fortune) (touch ldr to change the threshold)
+2. Choosing flavors (4 flavors)
+    1. press ButtonA to go to previous option
+    2. press ButtonB to select
+    3. press ButtonC to go to the next option
+3. Choosing toppings (4 toppings)
+    1. press ButtonA to go to previous option
+    2. press ButtonB to select
+    3. press ButtonC to go to the next option
+4. Fortune calculating (display this image for 3 seconds)
+5. Final results (display the flavor and topping selected by the user) + show a randomize fortune 
+    1. Press the middle button to restart
+
+**How does the code work?**
+1. Create a variable called “mode” and have it mapped to different stages of the system
+    1. When the middle button is pressed, go to the next mode (stage)
+2. In the choosing flavor and topping stages, assign values to each of the flavor images and use ButtonA and C to increase and decrease value and have the image displayed when certain value is selected. Use the middle button to select the item
+3. For the fortune, create a list of background images and have it displayed using randomization. Have the flavor and topping selected displayed on top of the background at this stage as well.
+### Hardware
+1. **LDR/ Light sensor**
+I implemented LDR and used it to detect the light value in the environment. If the value is higher than a certain number (based on the environment) then the code (MicroPython) will proceed to the next stage.
+### Firmware
+1. **Display**
+I used a display to present the graphical elements. The screen includes 3 buttons which allows the user to interact and control the program.
+
+Micropython Code:
+############################################################################## Final Code ###############################################################
+import os, sys, io
+import M5
+from M5 import *
+from hardware import *
+import random
+import time
+from unit import *
+
+SELECT = None
+rect0 = None
+Fortune = None
+SUBTITLE = None
+SUBTI = None
+ICECREAM1 = None
+ICECREAM2 = None
+ICECREAM3 = None
+BUTTONL = None
+SUBT = None
+BUTTONR = None
+SUBTITL = None
+
+mode = 0
+flavor = 1
+topping = 1
+
+light_0 = None
+light_value = 0
+light_timer = 0
+
+def setup():
+  global Fortune, SubL, SubR, SubL2, SubR2, Icecream_left, Icecream_middle, Icecream_right, Background, ButtonL, Select, ButtonR
+
+  M5.begin()
+  global light_0
+  light_0 = LightUnit((33,32))  # red port
+  
+  #showing the first image
+  Widgets.Image('res/img/0.png', 0, 0)
+
+
+def loop():
+  global SELECT, rect0, Fortune, SUBTITLE, SUBTI, ICECREAM1, ICECREAM2, ICECREAM3, BUTTONL, SUBT, BUTTONR, SUBTITL
+  global mode, flavor, topping
+  global light_value, light_timer
+  M5.update()
+  
+  # read light value every 2000ms and print it:
+  if(time.ticks_ms() > light_timer + 2000):
+    light_value = light_0.get_analog_value()
+    light_timer = time.ticks_ms()
+    if(mode == 0):
+      print('light_value =', light_value)
+      
+      #if light sensor value threshold is higher than 7000 then the system will proceed to the next mode
+      if(light_value > 70000):
+        print('finger detected.. change to mode 1')
+        mode = 1
+        display_image(n = flavor)
+  
+  #Button A makes previous options to be shown
+  if BtnA.wasPressed():
+    print('Previous Option')
+    if(mode == 1):
+      print('select previous flavor..')
+      if(flavor > 1):
+        flavor -= 1
+        display_image(n = flavor)
+      else:
+        print('already at first flavor..')
+    if(mode == 2):
+      print('select previous topping..')
+      if(topping > 1):
+        topping -= 1
+        display_image(n = topping)
+      else:
+        print('already at first topping..')
+    
+  # middle button controls mode:
+  if BtnB.wasPressed():
+    if(mode < 4):
+      mode += 1
+    else:
+      mode = 0
+    print('changed mode to ', mode)
+    
+    if(mode == 0):
+      Widgets.Image('res/img/0.png', 0, 0)
+    if(mode == 1):
+      display_image(n = flavor)
+    if(mode == 2):
+      display_image(n = topping)
+    if(mode == 3):
+      Widgets.Image('res/img/3.png', 0, 0)
+      time.sleep(3)
+      mode = 4
+    if(mode == 4):
+      random_number = random.randint(1, 8)
+      print('display final result..', random_number)
+      # display either 4_1.png or 4_5.png:
+      '''
+      if(random_number < 5):
+        Widgets.Image('res/img/4_1.png', 0, 0)
+      else:
+        Widgets.Image('res/img/4_5.png', 0, 0)
+      '''
+      
+      # display random image between 4_1 and 4_8:
+      Widgets.Image('res/img/4_' + str(random_number) + '.png', 0, 0)
+      Widgets.Image('res/img/flavor_' + str(flavor) + '.png', 0, 0)
+      Widgets.Image('res/img/topping_' + str(topping) + '.png', 0, 0)
+
+  #ButtonC makes you go to the next option
+  if BtnC.wasPressed():
+    print('Next Option')
+    if(mode == 1):
+      print('select next flavor..')
+      if(flavor < 4):
+        flavor += 1
+        display_image(n = flavor)
+      else:
+        print('already at last flavor..')
+    elif(mode == 2):
+      print('select next topping..')
+      if(topping < 4):
+        topping += 1
+        display_image(n = topping)
+      else:
+        print('already at last topping..')
+    
+def display_image(n):
+  img_path = 'res/img/' + str(mode) + '_' + str(n) + '.png'
+  print('display.. ' + img_path) 
+  Widgets.Image(img_path, 0, 0)
+  
+
+if __name__ == '__main__':
+  try:
+    setup()
+    while True:
+      loop()
+  except (Exception, KeyboardInterrupt) as e:
+    try:
+      from utility import print_error_msg
+      print_error_msg(e)
+    except ImportError:
+      print("please update to latest firmware")
+
+############################################################################## Final Code ###############################################################
+
+### Software
+I didn’t include any software usage. But in the future, I want to include the QR code generated to work and people can scan to get a digital poster of their fortune.
+### Enclosure / Mechanical Design
+**How to create this project:**
+
+1. Create all digital assets which is divided into 5 modes
+    1. starting screen (1)
+    2. choosing flavors (4)
+        1. 4 flavors
+    3. choosing toppings (4)
+        1. 4 toppings
+    4. fortune calculating (1)
+    5. final results (16)
+        1. background (fortune) (8)
+        2. individual flavor and topping (8)
+2. Create laser cut file for the box and then laser cut a 1/8 MDF
+3. Create digital asset for the box and print out on vinyl matte sticker paper
+4. Install all the digital assets onto the board through UI Flow and create MicroPython code for the system using Thonny or any other software
+5. Link light sensor to the board and add code for it to detect the change in threshold
+6. Assemble the prototype using glue and double sided tape
+7. To run the code, just plug the display to a computer and then run the code
+
+### Project Outcome
+The integration of the display, light sensor and the graphical aspects of the ice cream box, it makes the final prototype seems real as it gives the impression of being a mini version of an actual ice cream machine. I am satisfied with how it all turns out graphically and systemically.
+
+### Conclusion
+In conclusion, the main discovery is how to integrate hardware, firmware and MicroPython to create a functional system that works to represents your prototype. Through learning about different hardware, firmware, software and integrations of IFTTT, I learn the possibility of technology and how that allows you to do multiple things. In the future, I will look back on how I can integrate and utilize different technology to help assist my project.
